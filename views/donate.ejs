@@ -1,0 +1,72 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap wide">
+  <h1>Make a donation</h1>
+  <p class="muted">Choose how you want to help. You will get a reference code to track your donation.</p>
+
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+
+  <form method="post" action="/donate" class="form" id="donate-form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <fieldset class="type-picker">
+      <legend>How do you want to help?</legend>
+      <label class="choice"><input type="radio" name="donation_type" value="money" <%= form.donation_type === 'money' ? 'checked' : '' %>><span><strong>Money</strong><small>Secure online payment</small></span></label>
+      <label class="choice"><input type="radio" name="donation_type" value="medical" <%= form.donation_type === 'medical' ? 'checked' : '' %>><span><strong>Medical support</strong><small>Supplies, medicine, equipment</small></span></label>
+      <label class="choice"><input type="radio" name="donation_type" value="rescue" <%= form.donation_type === 'rescue' ? 'checked' : '' %>><span><strong>Rescue team</strong><small>Volunteers and specialists</small></span></label>
+    </fieldset>
+
+    <label>Disaster you want to support
+      <select name="disaster_id" required>
+        <option value="">Select a disaster…</option>
+        <% disasters.forEach(function (d) { %>
+          <option value="<%= d.id %>" <%= String(form.disaster_id) === String(d.id) ? 'selected' : '' %>><%= d.title %> (<%= d.location %>)</option>
+        <% }) %>
+      </select>
+    </label>
+
+    <div class="two-col">
+      <label>Your name <input type="text" name="donor_name" value="<%= form.donor_name || '' %>" required maxlength="120"></label>
+      <label>Email (for your receipt and updates) <input type="email" name="donor_email" value="<%= form.donor_email || '' %>" required maxlength="255"></label>
+    </div>
+    <label>Phone <span class="muted small" data-type-show="rescue">(required for rescue teams)</span> <input type="tel" name="donor_phone" value="<%= form.donor_phone || '' %>" maxlength="40"></label>
+
+    <div class="type-section" data-type="money">
+      <label>Amount (<%= currency %>) <input type="number" name="amount" min="<%= minDonation %>" step="0.01" value="<%= form.amount || '' %>" placeholder="Minimum <%= minDonation %>"></label>
+      <div class="quick-amounts">
+        <% [100, 500, 1000, 5000].forEach(function (a) { %><button type="button" class="chip" data-amount="<%= a %>"><%= a.toLocaleString('en-US') %></button><% }) %>
+      </div>
+      <% if (methods.length > 1) { %>
+        <fieldset>
+          <legend>Payment method</legend>
+          <label class="check"><input type="radio" name="payment_method" value="online" <%= form.payment_method !== 'bank' ? 'checked' : '' %>> Pay online</label>
+          <label class="check"><input type="radio" name="payment_method" value="bank" <%= form.payment_method === 'bank' ? 'checked' : '' %>> Bank transfer</label>
+        </fieldset>
+      <% } else { %>
+        <input type="hidden" name="payment_method" value="bank">
+        <p class="small muted">You will pay by bank transfer to our account. We email you a code to confirm your email, then show you the bank details.</p>
+      <% } %>
+    </div>
+
+    <div class="type-section" data-type="medical">
+      <label>What are you donating? <textarea name="item_description" rows="3" placeholder="e.g. 200 first-aid kits, 50 boxes of antibiotics (with expiry dates)"><%= form.item_description || '' %></textarea></label>
+      <label>Quantity <input type="number" name="quantity" min="1" step="1" value="<%= form.quantity || '' %>"></label>
+    </div>
+
+    <div class="type-section" data-type="rescue">
+      <label>Skills and equipment <textarea name="skills" rows="3" placeholder="e.g. Swift-water rescue, first aid, 2 boats, 4x4 vehicle"><%= form.skills || '' %></textarea></label>
+      <div class="two-col">
+        <label>Team size <input type="number" name="team_size" min="1" step="1" value="<%= form.team_size || '' %>"></label>
+        <label>Availability <input type="text" name="availability" value="<%= form.availability || '' %>" placeholder="e.g. From Monday for 2 weeks"></label>
+      </div>
+    </div>
+
+    <label>Message (optional) <textarea name="message" rows="2" maxlength="1000"><%= form.message || '' %></textarea></label>
+    <label class="check"><input type="checkbox" name="is_anonymous" <%= form.is_anonymous ? 'checked' : '' %>> Keep my name hidden on public pages</label>
+
+    <button class="btn btn-large" type="submit">Continue</button>
+    <p class="small muted">We will email you a 6-digit code to confirm your email address before completing your donation.</p>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

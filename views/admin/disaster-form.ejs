@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+<% var startedOn = ''; try { startedOn = new Date(d.started_on).toISOString().slice(0, 10); } catch (e) { startedOn = ''; } %>
+
+<h1><%= isNew ? 'New disaster campaign' : 'Edit: ' + d.title %></h1>
+<% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+
+<form method="post" enctype="multipart/form-data" action="<%= (isNew ? '/admin/disasters' : '/admin/disasters/' + d.id) + '?_csrf=' + encodeURIComponent(csrfToken) %>" class="form form-wide">
+  <label>Title <input type="text" name="title" value="<%= d.title %>" required maxlength="200"></label>
+  <div class="two-col">
+    <label>Type
+      <select name="disaster_type"><% DISASTER_TYPES.forEach(function (t) { %><option value="<%= t %>" <%= d.disaster_type === t ? 'selected' : '' %>><%= t %></option><% }) %></select>
+    </label>
+    <label>Location <input type="text" name="location" value="<%= d.location %>" required maxlength="200"></label>
+  </div>
+  <div class="two-col">
+    <label>Severity
+      <select name="severity"><% SEVERITIES.forEach(function (s) { %><option value="<%= s %>" <%= d.severity === s ? 'selected' : '' %>><%= s %></option><% }) %></select>
+    </label>
+    <label>Status
+      <select name="status"><option value="active" <%= d.status === 'active' ? 'selected' : '' %>>active (accepting donations)</option><option value="closed" <%= d.status === 'closed' ? 'selected' : '' %>>closed</option></select>
+    </label>
+  </div>
+  <label>Started on <input type="date" name="started_on" value="<%= startedOn %>" required></label>
+
+  <fieldset class="form">
+    <legend>Photo</legend>
+    <% if (d.image_url) { %><img src="<%= d.image_url %>" alt="" style="max-width:260px;border-radius:8px"><% } %>
+    <label>Upload a photo (JPG, PNG or WebP, up to 5 MB) <input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
+    <label>Or paste an image address <input type="url" name="image_url" value="<%= d.image_url || '' %>" placeholder="https://… (leave as is to keep the current photo)"></label>
+    <label>Photo credit <input type="text" name="image_credit" value="<%= d.image_credit || '' %>" maxlength="200" placeholder="e.g. Jane Doe, CC BY 4.0, Wikimedia Commons"></label>
+    <p class="small muted">Only use photos you own or have permission or a licence to use, and give the credit the licence requires.</p>
+  </fieldset>
+
+  <label>Description <textarea name="description" rows="6" required><%= d.description %></textarea></label>
+  <label>Medical support needed <textarea name="needs_medical" rows="3"><%= d.needs_medical || '' %></textarea></label>
+  <label>Rescue teams needed <textarea name="needs_rescue" rows="3"><%= d.needs_rescue || '' %></textarea></label>
+  <button class="btn" type="submit"><%= isNew ? 'Create campaign' : 'Save changes' %></button>
+  <a class="btn btn-outline" href="/admin/disasters">Back</a>
+</form>
+
+<% if (!isNew) { %>
+  <h2>Situation updates</h2>
+  <form method="post" action="/admin/disasters/<%= d.id %>/updates" class="form form-wide">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Headline <input type="text" name="title" required maxlength="200"></label>
+    <label>Details <textarea name="body" rows="3" required></textarea></label>
+    <button class="btn btn-outline" type="submit">Publish update</button>
+  </form>
+  <% updates.forEach(function (u) { %>
+    <div class="update"><strong><%= u.title %></strong> <span class="muted small"><%= fmtDate(u.created_at) %></span><p class="prewrap"><%= u.body %></p></div>
+  <% }) %>
+<% } %>
+
+<%- include('../partials/footer') %>

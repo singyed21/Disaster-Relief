@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap wide">
+  <% if (justDonated) { %>
+    <% if (d.status === 'completed' || d.status === 'pledged') { %>
+      <div class="alert alert-success"><strong>Thank you<%= d.is_anonymous ? '' : ', ' + d.donor_name %>.</strong>
+        <%= d.donation_type === 'money' ? 'Your payment was received.' : 'Your pledge was received and coordinators will contact you.' %>
+        A confirmation was sent to your email.</div>
+    <% } else if (d.status === 'pending') { %>
+      <div class="alert alert-info">Your payment is still being confirmed. This page updates once the provider confirms it. Refresh in a moment.</div>
+    <% } else if (d.status === 'verifying') { %>
+      <div class="alert alert-info">We received your transfer details and are checking them against our bank statement. You will get an email once it is confirmed.</div>
+    <% } else if (d.status === 'failed') { %>
+      <div class="alert alert-error">The payment was not completed and nothing was charged. <a href="/donate?disaster=<%= d.disaster_id %>">Try again</a>.</div>
+    <% } %>
+  <% } %>
+
+  <h1>Donation <%= d.reference %></h1>
+  <p class="muted">Keep this code. Anyone with it can view this page, so share it carefully.</p>
+
+  <div class="card pad">
+    <dl class="facts">
+      <dt>Status</dt><dd><span class="badge st-<%= d.status %>"><%= statusLabel(d.donation_type, d.status) %></span></dd>
+      <dt>Type</dt><dd><%= typeLabel(d.donation_type) %></dd>
+      <dt>Disaster</dt><dd><a href="/disasters/<%= d.disaster_id %>"><%= d.disaster_title %></a></dd>
+      <dt>Donor</dt><dd><%= d.is_anonymous ? 'Anonymous' : d.donor_name %></dd>
+      <% if (d.donation_type === 'money') { %>
+        <dt>Amount</dt><dd><%= fmtMoney(d.amount, d.currency) %><% if (d.payment_provider === 'sandbox') { %> <span class="tag">test payment</span><% } %></dd>
+        <% if (d.transfer_reference) { %>
+          <dt>Transfer ref</dt><dd><%= d.transfer_reference %></dd>
+          <dt>Transfer date</dt><dd><%= fmtDate(d.transfer_date) %></dd>
+        <% } %>
+      <% } else if (d.donation_type === 'medical') { %>
+        <dt>Items</dt><dd><%= d.item_description %> (qty <%= d.quantity %>)</dd>
+      <% } else { %>
+        <dt>Team</dt><dd><%= d.team_size %> people · <%= d.skills %></dd>
+        <dt>Availability</dt><dd><%= d.availability %></dd>
+      <% } %>
+      <dt>Created</dt><dd><%= fmtDateTime(d.created_at) %></dd>
+    </dl>
+  </div>
+
+  <% if (d.status === 'unverified') { %>
+    <p><a class="btn" href="/donations/<%= d.reference %>/verify">Enter your email code</a></p>
+  <% } else if (d.status === 'pending' && d.payment_provider === 'bank') { %>
+    <p><a class="btn" href="/donations/<%= d.reference %>/pay-bank">See bank details and submit your transfer</a></p>
+  <% } %>
+
+  <h2>Timeline</h2>
+  <ol class="timeline">
+    <% timeline.forEach(function (t) { %>
+      <li>
+        <span class="dot st-<%= t.status %>"></span>
+        <div><strong><%= statusLabel(d.donation_type, t.status) %></strong> <span class="muted small"><%= fmtDateTime(t.created_at) %></span>
+        <% if (t.note) { %><p><%= t.note %></p><% } %></div>
+      </li>
+    <% }) %>
+  </ol>
+  <p><a href="/dashboard">See how all funds are being used →</a></p>
+</div>
+
+<%- include('partials/footer') %>

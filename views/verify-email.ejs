@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Verify your email</h1>
+  <p class="muted">We sent a 6-digit code to your email. It expires in 10 minutes.</p>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/verify-email" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Email <input type="email" name="email" value="<%= email %>" required></label>
+    <label>Code <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" required autofocus></label>
+    <button class="btn block" type="submit">Verify</button>
+  </form>
+  <form method="post" action="/resend-verification" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="email" value="<%= email %>">
+    <button class="btn btn-outline block" type="submit">Send a new code</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

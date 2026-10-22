@@ -1,0 +1,19 @@
+<article class="card disaster-card">
+  <% if (d.image_url) { %><img src="<%= d.image_url %>" alt="Photo: <%= d.title %>" class="card-img" loading="lazy"><% } else { %><div class="card-img card-img-fallback type-<%= d.disaster_type %>"><%= d.disaster_type %></div><% } %>
+  <div class="card-body">
+    <div class="tags">
+      <span class="tag sev-<%= d.severity %>"><%= d.severity %></span>
+      <span class="tag"><%= d.disaster_type %></span>
+      <% if (d.status === 'closed') { %><span class="tag">closed</span><% } %>
+    </div>
+    <h3><a href="/disasters/<%= d.id %>"><%= d.title %></a></h3>
+    <p class="muted"><%= d.location %></p>
+    <p><%= d.description.length > 150 ? d.description.slice(0, 150) + '…' : d.description %></p>
+    <p class="small"><strong><%= fmtMoney(d.raised) %></strong> raised</p>
+    <p class="small muted"><%= d.medical_count %> medical pledges · <%= d.rescue_count %> rescue offers</p>
+    <div class="card-actions">
+      <a class="btn btn-small" href="/donate?disaster=<%= d.id %>">Donate</a>
+      <a class="btn btn-small btn-outline" href="/disasters/<%= d.id %>">Details</a>
+    </div>
+  </div>
+</article>

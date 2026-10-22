@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Choose a new password</h1>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/reset/<%= token %>" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>New password <input type="password" name="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+    <label>Confirm password <input type="password" name="confirm" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+    <button class="btn block" type="submit">Update password</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

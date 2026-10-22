@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Disaster Relief Portal</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/">Relief<span>Portal</span></a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle menu">
+    <label for="nav-toggle" class="nav-burger" aria-hidden="true">Menu</label>
+    <nav class="nav-links">
+      <a href="/disasters">Disasters</a>
+      <a href="/donate">Donate</a>
+      <a href="/dashboard">Transparency</a>
+      <a href="/track">Track a donation</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+    <div class="nav-user">
+      <% if (user) { %>
+        <% if (user.role === 'admin') { %><a href="/admin" class="btn btn-small btn-outline">Admin</a><% } %>
+        <a href="/account" class="btn btn-small btn-ghost"><%= user.name.split(' ')[0] %></a>
+        <form method="post" action="/logout" class="inline">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn btn-small btn-ghost" type="submit">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="btn btn-small btn-ghost">Log in</a>
+        <a href="/register" class="btn btn-small btn-outline">Sign up</a>
+      <% } %>
+    </div>
+  </div>
+</header>
+<% if (flash) { %>
+  <div class="container"><div class="alert alert-<%= flash.type %>" role="status"><%= flash.msg %></div></div>
+<% } %>
+<main class="container">

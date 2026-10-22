@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<h1>Disasters</h1>
+<form method="get" action="/disasters" class="filters">
+  <input type="search" name="q" value="<%= filters.q %>" placeholder="Search by name or place">
+  <select name="type" aria-label="Type">
+    <option value="">All types</option>
+    <% ['flood','earthquake','landslide','fire','storm','drought','other'].forEach(function (t) { %>
+      <option value="<%= t %>" <%= filters.type === t ? 'selected' : '' %>><%= t %></option>
+    <% }) %>
+  </select>
+  <select name="status" aria-label="Status">
+    <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+    <option value="closed" <%= filters.status === 'closed' ? 'selected' : '' %>>Closed</option>
+    <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All</option>
+  </select>
+  <button class="btn" type="submit">Filter</button>
+</form>
+
+<% if (!disasters.length) { %><p class="muted">No disasters match your filters.</p><% } %>
+<div class="grid">
+  <% disasters.forEach(function (d) { %><%- include('partials/disaster-card', { d: d }) %><% }) %>
+</div>
+
+<%- include('partials/footer') %>

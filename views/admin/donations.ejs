@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<div class="section-head"><h1>Donations <span class="muted small">(<%= total %>)</span></h1><a class="btn btn-outline" href="/admin/donations.csv?<%= qs %>">Export CSV</a></div>
+
+<form method="get" action="/admin/donations" class="filters">
+  <input type="search" name="q" value="<%= f.q %>" placeholder="Reference, name or email">
+  <select name="type" aria-label="Type">
+    <option value="">All types</option>
+    <option value="money" <%= f.type === 'money' ? 'selected' : '' %>>Money</option>
+    <option value="medical" <%= f.type === 'medical' ? 'selected' : '' %>>Medical</option>
+    <option value="rescue" <%= f.type === 'rescue' ? 'selected' : '' %>>Rescue</option>
+  </select>
+  <select name="status" aria-label="Status">
+    <option value="">All statuses</option>
+    <% allStatuses.forEach(function (s) { %><option value="<%= s %>" <%= f.status === s ? 'selected' : '' %>><%= s %></option><% }) %>
+  </select>
+  <select name="disaster" aria-label="Disaster">
+    <option value="">All disasters</option>
+    <% disasters.forEach(function (x) { %><option value="<%= x.id %>" <%= f.disaster === x.id ? 'selected' : '' %>><%= x.title %></option><% }) %>
+  </select>
+  <button class="btn" type="submit">Filter</button>
+</form>
+
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Date</th><th>Reference</th><th>Donor</th><th>Disaster</th><th>Type</th><th class="num">Amount</th><th>Status</th></tr></thead>
+  <tbody>
+  <% donations.forEach(function (d) { %>
+    <tr>
+      <td><%= fmtDate(d.created_at) %></td>
+      <td><a href="/admin/donations/<%= d.id %>"><%= d.reference %></a></td>
+      <td><%= d.donor_name %><br><span class="muted small"><%= d.donor_email %></span></td>
+      <td><%= d.disaster_title %></td>
+      <td><%= typeLabel(d.donation_type) %></td>
+      <td class="num"><%= d.donation_type === 'money' ? fmtMoney(d.amount, d.currency) : '-' %></td>
+      <td><span class="badge st-<%= d.status %>"><%= statusLabel(d.donation_type, d.status) %></span></td>
+    </tr>
+  <% }) %>
+  <% if (!donations.length) { %><tr><td colspan="7" class="muted">No donations match.</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+
+<% if (pages > 1) { %>
+  <p class="pager">
+    <% if (page > 1) { %><a href="/admin/donations?<%= qs %>&page=<%= page - 1 %>">← Previous</a><% } %>
+    Page <%= page %> of <%= pages %>
+    <% if (page < pages) { %><a href="/admin/donations?<%= qs %>&page=<%= page + 1 %>">Next →</a><% } %>
+  </p>
+<% } %>
+
+<%- include('../partials/footer') %>

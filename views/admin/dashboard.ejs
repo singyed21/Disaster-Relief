@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Admin overview</h1>
+
+<section class="stats">
+  <div class="stat"><strong><%= fmtMoney(stats.total_raised) %></strong><span>confirmed money raised</span></div>
+  <div class="stat"><strong><%= fmtMoney(stats.total_allocated) %></strong><span>allocated / spent</span></div>
+  <div class="stat"><strong><%= stats.medical_pledges %> / <%= stats.rescue_pledges %></strong><span>medical / rescue pledges</span></div>
+  <div class="stat"><strong><%= unread %></strong><span>unread messages</span></div>
+</section>
+
+<div class="grid two">
+  <section>
+    <h2>Pledges needing action</h2>
+    <% if (!pendingActions.length) { %><p class="muted">Nothing waiting.</p><% } else { %>
+    <table class="table">
+      <thead><tr><th>Ref</th><th>Type</th><th>Donor</th><th>Status</th></tr></thead>
+      <tbody>
+      <% pendingActions.forEach(function (p) { %>
+        <tr><td><a href="/admin/donations/<%= p.id %>"><%= p.reference.slice(0, 9) %>…</a></td><td><%= typeLabel(p.donation_type) %></td><td><%= p.donor_name %></td><td><span class="badge st-<%= p.status %>"><%= statusLabel(p.donation_type, p.status) %></span></td></tr>
+      <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </section>
+  <section>
+    <h2>Latest donations</h2>
+    <table class="table">
+      <thead><tr><th>Ref</th><th>Donor</th><th class="num">Amount</th><th>Status</th></tr></thead>
+      <tbody>
+      <% recent.forEach(function (r) { %>
+        <tr><td><a href="/admin/donations/<%= r.id %>"><%= r.reference.slice(0, 9) %>…</a></td><td><%= r.donor_name %></td><td class="num"><%= r.donation_type === 'money' ? fmtMoney(r.amount, r.currency) : typeLabel(r.donation_type) %></td><td><span class="badge st-<%= r.status %>"><%= statusLabel(r.donation_type, r.status) %></span></td></tr>
+      <% }) %>
+      <% if (!recent.length) { %><tr><td colspan="4" class="muted">No donations yet.</td></tr><% } %>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<h2>Recent admin activity</h2>
+<table class="table">
+  <thead><tr><th>When</th><th>Admin</th><th>Action</th><th>Details</th></tr></thead>
+  <tbody>
+  <% auditLog.forEach(function (a) { %>
+    <tr><td><%= fmtDateTime(a.created_at) %></td><td><%= a.admin_name || '-' %></td><td><%= a.action %></td><td class="muted"><%= a.details %></td></tr>
+  <% }) %>
+  <% if (!auditLog.length) { %><tr><td colspan="4" class="muted">No activity recorded yet.</td></tr><% } %>
+  </tbody>
+</table>
+
+<%- include('../partials/footer') %>

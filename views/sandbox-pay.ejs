@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap">
+  <div class="alert alert-warn"><strong>Sandbox checkout.</strong> This is a simulated payment page for testing. No real money moves.</div>
+  <h1>Complete payment</h1>
+  <div class="card pad">
+    <p>Donation to <strong><%= d.disaster_title %></strong></p>
+    <p class="big"><%= fmtMoney(d.amount, d.currency) %></p>
+    <p class="muted small">Reference <%= d.reference %></p>
+    <form method="post" action="/pay/sandbox/<%= d.reference %>" class="row">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button class="btn" name="outcome" value="success" type="submit">Simulate successful payment</button>
+      <button class="btn btn-outline" name="outcome" value="fail" type="submit">Simulate failed payment</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Settings</h1>
+<h2>Bank account for donations</h2>
+<p class="muted">Donors who choose bank transfer see exactly these details. Double-check them: money sent here goes to this account. Every change is recorded in the audit log.</p>
+<% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+
+<form method="post" action="/admin/settings" class="form form-wide">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="two-col">
+    <label>Bank name <input type="text" name="bank_name" value="<%= s.bank_name || '' %>" required maxlength="100"></label>
+    <label>Branch <input type="text" name="bank_branch" value="<%= s.bank_branch || '' %>" maxlength="100"></label>
+  </div>
+  <div class="two-col">
+    <label>Account name <input type="text" name="bank_account_name" value="<%= s.bank_account_name || '' %>" required maxlength="120"></label>
+    <label>Account number <input type="text" name="bank_account_number" value="<%= s.bank_account_number || '' %>" required maxlength="40"></label>
+  </div>
+  <label>Extra instructions for donors (optional) <textarea name="bank_instructions" rows="3" maxlength="1000"><%= s.bank_instructions || '' %></textarea></label>
+  <button class="btn" type="submit">Save bank details</button>
+</form>
+
+<%- include('../partials/footer') %>

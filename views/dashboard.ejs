@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+
+<h1>Transparency dashboard</h1>
+<p class="muted">All figures are calculated live from our donation records. Only payments confirmed by the payment provider count as money raised.</p>
+
+<section class="stats">
+  <div class="stat"><strong><%= fmtMoney(stats.total_raised) %></strong><span>raised (confirmed)</span></div>
+  <div class="stat"><strong><%= fmtMoney(stats.total_allocated) %></strong><span>spent on relief</span></div>
+  <div class="stat"><strong><%= fmtMoney(stats.total_raised - stats.total_allocated) %></strong><span>held, not yet spent</span></div>
+  <div class="stat"><strong><%= stats.medical_pledges + stats.rescue_pledges %></strong><span>medical and rescue pledges</span></div>
+</section>
+
+<h2>By disaster</h2>
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Disaster</th><th>Status</th><th class="num">Raised</th><th class="num">Spent</th><th class="num">Medical</th><th class="num">Rescue</th></tr></thead>
+  <tbody>
+  <% disasters.forEach(function (d) { %>
+    <tr>
+      <td><a href="/disasters/<%= d.id %>"><%= d.title %></a></td>
+      <td><%= d.status %></td>
+      <td class="num"><%= fmtMoney(d.raised) %></td>
+      <td class="num"><%= fmtMoney(d.allocated) %></td>
+      <td class="num"><%= d.medical_count %></td>
+      <td class="num"><%= d.rescue_count %></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+
+<h2>How money was spent</h2>
+<% if (!allocations.length) { %><p class="muted">No spending has been recorded yet.</p><% } else { %>
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Date</th><th>Disaster</th><th>Spent on</th><th class="num">Amount</th></tr></thead>
+  <tbody>
+  <% allocations.forEach(function (a) { %>
+    <tr><td><%= fmtDate(a.spent_on) %></td><td><%= a.disaster_title %></td><td><strong><%= a.title %></strong><% if (a.description) { %><br><span class="muted small"><%= a.description %></span><% } %></td><td class="num"><%= fmtMoney(a.amount) %></td></tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+<% } %>
+
+<h2>Latest donations</h2>
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Date</th><th>Donor</th><th>Type</th><th>Disaster</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  <% ledger.forEach(function (r) { %>
+    <tr>
+      <td><%= fmtDate(r.created_at) %></td>
+      <td><%= r.donor %></td>
+      <td><%= typeLabel(r.donation_type) %></td>
+      <td><%= r.disaster_title %></td>
+      <td class="num"><%= r.donation_type === 'money' ? fmtMoney(r.amount, r.currency) : '-' %></td>
+      <td><span class="badge st-<%= r.status %>"><%= statusLabel(r.donation_type, r.status) %></span></td>
+      <td class="small muted"><%= r.reference.slice(0, 6) %>…</td>
+    </tr>
+  <% }) %>
+  <% if (!ledger.length) { %><tr><td colspan="7" class="muted">No donations yet.</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+
+<%- include('partials/footer') %>

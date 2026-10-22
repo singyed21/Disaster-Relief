@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Contact messages</h1>
+<% if (!messages.length) { %><p class="muted">No messages yet.</p><% } %>
+<% messages.forEach(function (m) { %>
+  <div class="card pad message <%= m.is_read ? '' : 'unread' %>">
+    <div class="section-head">
+      <div><strong><%= m.subject %></strong><br><span class="muted small"><%= m.name %> · <a href="mailto:<%= m.email %>"><%= m.email %></a> · <%= fmtDateTime(m.created_at) %></span></div>
+      <% if (!m.is_read) { %>
+        <form method="post" action="/admin/messages/<%= m.id %>/read"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-small btn-outline" type="submit">Mark read</button></form>
+      <% } %>
+    </div>
+    <p class="prewrap"><%= m.message %></p>
+  </div>
+<% }) %>
+
+<%- include('../partials/footer') %>

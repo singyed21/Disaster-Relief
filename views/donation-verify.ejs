@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Confirm your email</h1>
+  <p>We sent a 6-digit code to <strong><%= maskedEmail %></strong>. It expires in 10 minutes.</p>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/donations/<%= d.reference %>/verify" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Verification code <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="\d{6}" maxlength="6" required autofocus></label>
+    <button class="btn block" type="submit">Verify and continue</button>
+  </form>
+  <form method="post" action="/donations/<%= d.reference %>/resend-otp" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <button class="btn btn-outline block" type="submit">Send a new code</button>
+  </form>
+  <p class="small muted">Reference <%= d.reference %>. Wrong email? <a href="/donate">Start again</a>.</p>
+</div>
+
+<%- include('partials/footer') %>

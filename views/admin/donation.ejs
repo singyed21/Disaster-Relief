@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<p class="crumbs"><a href="/admin/donations">Donations</a> / <%= d.reference %></p>
+<h1>Donation <%= d.reference %></h1>
+
+<div class="detail-grid">
+  <div>
+    <div class="card pad">
+      <dl class="facts">
+        <dt>Status</dt><dd><span class="badge st-<%= d.status %>"><%= statusLabel(d.donation_type, d.status) %></span></dd>
+        <dt>Type</dt><dd><%= typeLabel(d.donation_type) %></dd>
+        <dt>Disaster</dt><dd><%= d.disaster_title %></dd>
+        <dt>Donor</dt><dd><%= d.donor_name %><%= d.is_anonymous ? ' (anonymous publicly)' : '' %></dd>
+        <dt>Email</dt><dd><%= d.donor_email %></dd>
+        <dt>Phone</dt><dd><%= d.donor_phone || '-' %></dd>
+        <% if (d.donation_type === 'money') { %>
+          <dt>Amount</dt><dd><%= fmtMoney(d.amount, d.currency) %></dd>
+          <dt>Provider</dt><dd><%= d.payment_provider %><%= d.provider_ref ? ' · ' + d.provider_ref : '' %></dd>
+          <% if (d.transfer_reference) { %>
+            <dt>Transfer ref</dt><dd><%= d.transfer_reference %></dd>
+            <dt>Transfer date</dt><dd><%= fmtDate(d.transfer_date) %></dd>
+          <% } %>
+        <% } else if (d.donation_type === 'medical') { %>
+          <dt>Items</dt><dd class="prewrap"><%= d.item_description %> (qty <%= d.quantity %>)</dd>
+        <% } else { %>
+          <dt>Skills</dt><dd class="prewrap"><%= d.skills %></dd>
+          <dt>Team size</dt><dd><%= d.team_size %></dd>
+          <dt>Availability</dt><dd><%= d.availability %></dd>
+        <% } %>
+        <dt>Message</dt><dd class="prewrap"><%= d.message || '-' %></dd>
+        <dt>Created</dt><dd><%= fmtDateTime(d.created_at) %></dd>
+      </dl>
+    </div>
+
+    <h2>Timeline (visible to the donor)</h2>
+    <ol class="timeline">
+      <% timeline.forEach(function (t) { %>
+        <li><span class="dot st-<%= t.status %>"></span>
+          <div><strong><%= statusLabel(d.donation_type, t.status) %></strong> <span class="muted small"><%= fmtDateTime(t.created_at) %><%= t.admin_name ? ' · ' + t.admin_name : '' %></span>
+          <% if (t.note) { %><p><%= t.note %></p><% } %></div></li>
+      <% }) %>
+    </ol>
+  </div>
+
+  <aside>
+    <div class="card pad sticky">
+      <h3>Update this donation</h3>
+      <form method="post" action="/admin/donations/<%= d.id %>/status" class="form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <% if (allowed.length) { %>
+          <label>Change status to
+            <select name="status">
+              <option value="">Keep current status</option>
+              <% allowed.forEach(function (s) { %><option value="<%= s %>"><%= statusLabel(d.donation_type, s) %></option><% }) %>
+            </select>
+          </label>
+        <% } else { %>
+          <p class="small muted">No status changes are available for this donation.</p>
+        <% } %>
+        <label>Note shown to the donor <textarea name="note" rows="3" maxlength="1000" placeholder="e.g. Delivered to Sample District hospital, signed by Dr. Dorji"></textarea></label>
+        <button class="btn block" type="submit">Save and notify donor</button>
+      </form>
+      <% if (d.donation_type === 'money') { %>
+        <p class="small muted">For bank transfers, verify the bank statement before marking as received. Online payments are confirmed automatically.</p>
+      <% } %>
+    </div>
+  </aside>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap">
+  <h1>Track a donation</h1>
+  <p class="muted">Enter the reference code from your confirmation email (it looks like <code>DR-3F9A1C07B2D4E586</code>).</p>
+  <form method="post" action="/track" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Reference code <input type="text" name="reference" required maxlength="40" placeholder="DR-…" autocomplete="off"></label>
+    <button class="btn" type="submit">Show my donation</button>
+  </form>
+  <p class="small muted">Have an account? <a href="/account">See all your donations</a>.</p>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <h1>Help people hit by disaster, and see exactly where your help goes.</h1>
+  <p class="lead">Give money, medical supplies or a trained rescue team. Every donation gets a reference code you can use to follow it, step by step, until it reaches the people who need it.</p>
+  <div class="hero-actions">
+    <a class="btn btn-large" href="/donate">Donate now</a>
+    <a class="btn btn-large btn-outline" href="/dashboard">See the transparency report</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><strong><%= fmtMoney(stats.total_raised) %></strong><span>confirmed money raised</span></div>
+  <div class="stat"><strong><%= stats.money_donations %></strong><span>money donations received</span></div>
+  <div class="stat"><strong><%= stats.medical_pledges %></strong><span>medical support pledges</span></div>
+  <div class="stat"><strong><%= stats.rescue_pledges %></strong><span>rescue team offers</span></div>
+</section>
+
+<section>
+  <div class="section-head">
+    <h2>Disasters needing help now</h2>
+    <a href="/disasters">View all (<%= stats.active_disasters %>)</a>
+  </div>
+  <% if (!disasters.length) { %>
+    <p class="muted">There are no active campaigns right now. Please check back soon.</p>
+  <% } %>
+  <div class="grid">
+    <% disasters.forEach(function (d) { %><%- include('partials/disaster-card', { d: d }) %><% }) %>
+  </div>
+</section>
+
+<section>
+  <h2>Three ways to help</h2>
+  <div class="grid three">
+    <div class="card pad"><h3>Money</h3><p>Pay securely online. Your donation is only counted once the payment is confirmed, and our spending is published.</p><a href="/donate?type=money">Donate money →</a></div>
+    <div class="card pad"><h3>Medical support</h3><p>Offer medicines, equipment or supplies. We confirm receipt and delivery to clinics and camps on your timeline.</p><a href="/donate?type=medical">Pledge medical support →</a></div>
+    <div class="card pad"><h3>Rescue team</h3><p>Trained volunteers, drivers or specialist teams: tell us your skills and availability and coordinators will deploy you.</p><a href="/donate?type=rescue">Offer a rescue team →</a></div>
+  </div>
+</section>
+
+<section class="callout">
+  <h2>Already donated?</h2>
+  <p>Enter your reference code to see your donation timeline, from payment to delivery.</p>
+  <a class="btn" href="/track">Track my donation</a>
+</section>
+
+<%- include('partials/footer') %>

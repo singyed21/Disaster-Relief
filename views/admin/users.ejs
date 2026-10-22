@@ -1,0 +1,33 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Users</h1>
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Name</th><th>Email</th><th>Verified</th><th class="num">Donations</th><th>Joined</th><th>Role</th></tr></thead>
+  <tbody>
+  <% users.forEach(function (u) { %>
+    <tr>
+      <td><%= u.name %></td><td><%= u.email %></td>
+      <td><%= u.email_verified ? 'Yes' : 'No' %></td>
+      <td class="num"><%= u.donation_count %></td>
+      <td><%= fmtDate(u.created_at) %></td>
+      <td>
+        <% if (u.id === user.id) { %>
+          <span class="tag">admin (you)</span>
+        <% } else { %>
+          <form method="post" action="/admin/users/<%= u.id %>/role" class="inline" data-confirm="Change this user's role?">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="role" value="<%= u.role === 'admin' ? 'donor' : 'admin' %>">
+            <span class="tag"><%= u.role %></span>
+            <button class="btn btn-small btn-outline" type="submit"><%= u.role === 'admin' ? 'Make donor' : 'Make admin' %></button>
+          </form>
+        <% } %>
+      </td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+
+<%- include('../partials/footer') %>

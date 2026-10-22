@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Create an account</h1>
+  <p class="muted">An account lets you see all your donations in one place. You can also donate without one.</p>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/register" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Full name <input type="text" name="name" value="<%= form.name || '' %>" required maxlength="120" autocomplete="name"></label>
+    <label>Email <input type="email" name="email" value="<%= form.email || '' %>" required autocomplete="email"></label>
+    <label>Phone (optional) <input type="tel" name="phone" value="<%= form.phone || '' %>" maxlength="40"></label>
+    <label>Password (at least 8 characters) <input type="password" name="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+    <label>Confirm password <input type="password" name="confirm" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+    <button class="btn block" type="submit">Create account</button>
+  </form>
+  <p class="small">Already registered? <a href="/login">Log in</a></p>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Log in</h1>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/login" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <input type="hidden" name="next" value="<%= next %>">
+    <label>Email <input type="email" name="email" value="<%= form.email || '' %>" required autocomplete="email"></label>
+    <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn block" type="submit">Log in</button>
+  </form>
+  <% if (unverifiedEmail) { %>
+    <form method="post" action="/resend-verification" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="email" value="<%= unverifiedEmail %>">
+      <button class="btn btn-outline block" type="submit">Send me a new code.</button>
+    </form>
+  <% } %>
+  <p class="small"><a href="/forgot">Forgot your password?</a> · <a href="/register">Create an account</a></p>
+</div>
+
+<%- include('partials/footer') %>

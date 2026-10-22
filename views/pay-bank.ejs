@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap wide">
+  <h1>Pay by bank transfer</h1>
+  <p class="muted">Donation <%= d.reference %> for <strong><%= d.disaster_title %></strong></p>
+
+  <div class="card pad">
+    <h3>Transfer exactly <%= fmtMoney(d.amount, d.currency) %> to:</h3>
+    <dl class="facts">
+      <dt>Bank</dt><dd><%= bank.bank_name %></dd>
+      <dt>Account name</dt><dd><%= bank.bank_account_name %></dd>
+      <dt>Account number</dt><dd><strong><%= bank.bank_account_number %></strong></dd>
+      <% if (bank.bank_branch) { %><dt>Branch</dt><dd><%= bank.bank_branch %></dd><% } %>
+      <dt>Remarks</dt><dd>Write <strong><%= d.reference %></strong> in the transfer remarks</dd>
+    </dl>
+    <% if (bank.bank_instructions) { %><p class="prewrap small"><%= bank.bank_instructions %></p><% } %>
+    <p class="small muted">Only use the account shown on this page. We will never ask you to send money anywhere else.</p>
+  </div>
+
+  <% if (d.status === 'verifying') { %>
+    <div class="alert alert-info">We received your transfer details (<%= d.transfer_reference %>) and are checking them. You will get an email once confirmed.</div>
+    <p><a class="btn" href="/donations/<%= d.reference %>">Track this donation</a></p>
+  <% } else { %>
+    <h2>After you transfer</h2>
+    <p class="muted">Enter the transaction or journal number from your bank's confirmation.</p>
+    <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+    <form method="post" action="/donations/<%= d.reference %>/pay-bank" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="two-col">
+        <label>Bank transaction / journal number <input type="text" name="transfer_reference" value="<%= form.transfer_reference || '' %>" required maxlength="80"></label>
+        <label>Date of transfer <input type="date" name="transfer_date" value="<%= form.transfer_date || '' %>" max="<%= new Date().toISOString().slice(0, 10) %>" required></label>
+      </div>
+      <button class="btn btn-large" type="submit">I have made the transfer</button>
+    </form>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

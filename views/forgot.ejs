@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap narrow">
+  <h1>Forgot your password?</h1>
+  <p class="muted">Enter your email and we will send you a reset link.</p>
+  <form method="post" action="/forgot" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Email <input type="email" name="email" required autocomplete="email"></label>
+    <button class="btn block" type="submit">Send reset link</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

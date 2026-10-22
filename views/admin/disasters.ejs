@@ -1,0 +1,24 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Admin Dashboard</h1>
+
+<section class="stats">
+  <div class="stat"><strong><%= stats.disasters %></strong><span>disasters</span></div>
+  <div class="stat"><strong><%= stats.donations %></strong><span>total donations</span></div>
+  <div class="stat"><strong><%= verifying %></strong><span>bank transfers to verify</span></div>
+  <div class="stat"><strong><%= stats.users %></strong><span>registered users</span></div>
+</section>
+
+<div class="grid-2">
+  <div class="card pad">
+    <h2>Recent Donations</h2>
+    <!-- Recent donations list/table -->
+  </div>
+  <div class="card pad">
+    <h2>Active Disasters</h2>
+    <!-- Active disasters list/table -->
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<div class="form-wrap">
+  <h1>Contact us</h1>
+  <% if (errors.length) { %><div class="alert alert-error"><ul><% errors.forEach(function (e) { %><li><%= e %></li><% }) %></ul></div><% } %>
+  <form method="post" action="/contact" class="form">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Your name <input type="text" name="name" value="<%= form.name || (user ? user.name : '') %>" required maxlength="120"></label>
+    <label>Email <input type="email" name="email" value="<%= form.email || (user ? user.email : '') %>" required maxlength="255"></label>
+    <label>Subject <input type="text" name="subject" value="<%= form.subject || '' %>" required maxlength="200"></label>
+    <label>Message <textarea name="message" rows="6" required maxlength="4000"><%= form.message || '' %></textarea></label>
+    <button class="btn" type="submit">Send message</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

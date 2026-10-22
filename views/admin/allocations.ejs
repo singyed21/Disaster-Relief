@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+<%- include('nav') %>
+
+<h1>Fund allocations</h1>
+<p class="muted">Record how collected money was spent. Entries appear on the public transparency dashboard. You cannot record more spending than the money received for a disaster.</p>
+
+<form method="post" action="/admin/allocations" class="form form-wide">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <div class="two-col">
+    <label>Disaster
+      <select name="disaster_id" required>
+        <option value="">Select…</option>
+        <% disasters.forEach(function (d) { %><option value="<%= d.id %>"><%= d.title %> (available <%= fmtMoney(d.raised - d.allocated) %>)</option><% }) %>
+      </select>
+    </label>
+    <label>Date spent <input type="date" name="spent_on" value="<%= new Date().toISOString().slice(0, 10) %>" required></label>
+  </div>
+  <div class="two-col">
+    <label>Spent on <input type="text" name="title" required maxlength="200" placeholder="e.g. 500 food packs"></label>
+    <label>Amount (<%= currency %>) <input type="number" name="amount" min="0.01" step="0.01" required></label>
+  </div>
+  <label>Details / supplier / receipt number <textarea name="description" rows="2" maxlength="2000"></textarea></label>
+  <button class="btn" type="submit">Record allocation</button>
+</form>
+
+<h2>All allocations</h2>
+<div class="table-wrap">
+<table class="table">
+  <thead><tr><th>Date</th><th>Disaster</th><th>Spent on</th><th class="num">Amount</th><th></th></tr></thead>
+  <tbody>
+  <% allocations.forEach(function (a) { %>
+    <tr>
+      <td><%= fmtDate(a.spent_on) %></td><td><%= a.disaster_title %></td>
+      <td><strong><%= a.title %></strong><% if (a.description) { %><br><span class="muted small"><%= a.description %></span><% } %></td>
+      <td class="num"><%= fmtMoney(a.amount) %></td>
+      <td><form method="post" action="/admin/allocations/<%= a.id %>/delete" class="inline" data-confirm="Remove this allocation from the public record?"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-small btn-danger" type="submit">Remove</button></form></td>
+    </tr>
+  <% }) %>
+  <% if (!allocations.length) { %><tr><td colspan="5" class="muted">Nothing recorded yet.</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+
+<%- include('../partials/footer') %>
