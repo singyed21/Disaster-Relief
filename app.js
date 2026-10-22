@@ -27,8 +27,7 @@ if (isProd) {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Payment webhook needs the raw request body for signature verification,
-// so it is mounted before the body parsers, session and CSRF middleware.
+// Payment webhook needs the raw request body for signature verification
 app.post('/webhooks/payment', express.raw({ type: '*/*' }), paymentService.webhookHandler);
 
 app.use((req, res, next) => {

@@ -1,11 +1,14 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const db = require('../config/db');
 const emails = require('../services/emails');
 const otp = require('../services/otp');
 const { authLimiter } = require('../middleware/limiters');
 const { requireLogin, guestOnly } = require('../middleware/auth');
 const { clean, isEmail, safeNext } = require('../utils/helpers');
+
+const sha256 = (text) => crypto.createHash('sha256').update(text).digest('hex');
 
 async function sendRegisterOtp(user) {
   const r = await otp.issue('register', user.email);
@@ -29,7 +32,6 @@ router.post('/register', guestOnly, authLimiter, async (req, res) => {
 
   const existing = await db.oneOrNone('SELECT id, name, email, email_verified FROM users WHERE email = $1', [form.email]);
   if (existing) {
-    // Never reveal whether an email is already registered
     if (!existing.email_verified) await sendRegisterOtp(existing);
   } else {
     const hash = await bcrypt.hash(password, 12);
@@ -86,7 +88,6 @@ router.post('/login', guestOnly, authLimiter, async (req, res) => {
 
   await new Promise((resolve, reject) => req.session.regenerate((e) => (e ? reject(e) : resolve())));
   req.session.userId = user.id;
-  // Attach earlier guest donations made with this (now verified) email to the account
   await db.none('UPDATE donations SET user_id = $1 WHERE user_id IS NULL AND LOWER(donor_email) = $2', [user.id, user.email]);
   res.redirect(safeNext(next));
 });
